@@ -13,10 +13,12 @@ export default function Home() {
 
   React.useEffect(() => {
     axios.get(`/api/check?id=${router?.query?.order_id}`).then((result) => {
-      if (router?.query?.order_id.includes("INNOVIXTECH"))
-        window.location.replace("https://blanja-fe-zeta.vercel.app");
+      if (router?.query?.order_id?.includes("INNOVIXTECH"))
+      {
+        router.replace("https://blanja-fe-zeta.vercel.app");
+      }
     });
-  }, []);
+  }, [router]);
 
   return (
     <>
