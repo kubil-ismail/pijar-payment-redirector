@@ -4,13 +4,16 @@ import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import React from 'react'
 import axios from 'axios'
+import { useRouter } from 'next/router'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const router = useRouter();
+
   React.useEffect(() => {
-    axios.get(`/api/check?id=YOUR-ORDERID-12345asd6123`).then((result) => {
-      if (result?.data?.order_id.includes("INNOVIXTECH"))
+    axios.get(`/api/check?id=${router?.query?.order_id}`).then((result) => {
+      if (router?.query?.order_id.includes("INNOVIXTECH"))
         window.location.replace("https://blanja-fe-zeta.vercel.app");
     });
   }, []);
