@@ -1,23 +1,90 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
-import React from 'react'
-import axios from 'axios'
-import { useRouter } from 'next/router'
+import Head from "next/head";
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import styles from "@/styles/Home.module.css";
+import React from "react";
+import axios from "axios";
+import { useRouter } from "next/router";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const router = useRouter();
 
   React.useEffect(() => {
     axios.get(`/api/check?id=${router?.query?.order_id}`).then((result) => {
-      if (router?.query?.order_id?.includes("INNOVIXTECH"))
-      {
-        router.replace("https://blanja-fe-zeta.vercel.app");
+      if (router?.query?.order_id?.includes("INNOVIXTECH")) {
+        axios
+          .get(
+            `https://alert-pink-duckling.cyclic.app/orders/payment/${result?.data?.order_id}`
+          )
+          .then((_result) => {
+            console.log(_result);
+            const {
+              product_id,
+              quantity,
+              address_id,
+              total,
+              payment_id,
+              user_id,
+              id,
+            } = _result?.data?.data?.[0];
+            axios.patch(`https://alert-pink-duckling.cyclic.app/orders/${id}`, {
+              product_id,
+              user_id,
+              quantity,
+              address_id,
+              total,
+              payment_id,
+              order_status: "success",
+            }).then(() => {
+              router.replace(
+                "https://blanja-fe-zeta.vercel.app/ProfileMyOrder"
+              );
+            })
+          });
       }
     });
+
+    setInterval(() => {
+      axios.get(`/api/check?id=${router?.query?.order_id}`).then((result) => {
+        if (router?.query?.order_id?.includes("INNOVIXTECH")) {
+          axios
+            .get(
+              `https://alert-pink-duckling.cyclic.app/orders/payment/${result?.data?.order_id}`
+            )
+            .then((_result) => {
+              console.log(_result);
+              const {
+                product_id,
+                quantity,
+                address_id,
+                total,
+                payment_id,
+                user_id,
+                id,
+              } = _result?.data?.data?.[0];
+              axios.patch(
+                `https://alert-pink-duckling.cyclic.app/orders/${id}`,
+                {
+                  product_id,
+                  user_id,
+                  quantity,
+                  address_id,
+                  total,
+                  payment_id,
+                  order_status: "success",
+                }
+              ).then(() => {
+                 router.replace(
+                   "https://blanja-fe-zeta.vercel.app/ProfileMyOrder"
+                 );
+              })
+            });
+          // router.replace("https://blanja-fe-zeta.vercel.app");
+        }
+      });
+    }, 1000);
   }, [router]);
 
   return (
@@ -32,5 +99,5 @@ export default function Home() {
         <h1>Redirecting to app..</h1>
       </main>
     </>
-  )
+  );
 }
